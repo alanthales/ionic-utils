@@ -7,7 +7,7 @@ angular.module('ojs.directives', ['ionic'])
         scope: {
             isEmpty: '='
         },
-        templateUrl: './app/views/ojs-listbase.html'
+        templateUrl: './app/views/templates/ojs-listbase.html'
     }
 })
 
@@ -16,7 +16,7 @@ angular.module('ojs.directives', ['ionic'])
         restrict: 'E',
         replace: true,
         transclude: true,
-        templateUrl: './app/views/ojs-itembase.html'
+        templateUrl: './app/views/templates/ojs-itembase.html'
     }
 })
 
@@ -30,7 +30,7 @@ angular.module('ojs.directives', ['ionic'])
             saveRecord: '&',
             closeForm: '&'
         },
-        templateUrl: './app/views/ojs-formbase.html',
+        templateUrl: './app/views/templates/ojs-formbase.html',
         link: function(scope, elm, attrs) {
             var bar = elm.find('ion-header-bar'),
                 btn = angular.element(elm[0].querySelector('button[type="submit"]'));
@@ -75,8 +75,8 @@ angular.module('ojs.directives', ['ionic'])
             
             parentScope.$on('$ionicView.enter', function() {
                 $ionicPopover.fromTemplateUrl(attrs.template, {
-                    scope: scope,
-                    animation: 'scale-in'
+                    scope: scope
+//                    animation: 'fade-in'
                 }).then(function(popover) {
                     parentScope.$ojsPopMenu = popover;
                 });
@@ -166,28 +166,30 @@ angular.module('ojs.directives', ['ionic'])
             items: '=',
             value: '='
         },
-        templateUrl: './app/views/ojs-select.html',
+        templateUrl: './app/views/templates/ojs-select.html',
 
         link: function (scope, element, attrs) {
+            var name = attrs.name || 'selModal';
+            
             $ionicModal.fromTemplateUrl(attrs.popupTmpl, {
                 scope: scope
             }).then(function(modal) {
                 var bar = angular.element(modal.$el.find('ion-header-bar')[0]);
                 bar.addClass('bar-' + attrs.uiClass);
-                scope.selModal = modal;
+                scope[name] = modal;
             });
 
             scope.$on('$destroy', function() {
-                scope.selModal.remove();
+                scope[name].remove();
             });
             
             scope.showItems = function (event) {
                 event.preventDefault();
-                scope.selModal.show();
+                scope[name].show();
             }
 
             scope.hideItems = function () {
-                scope.selModal.hide();
+                scope[name].hide();
             }
 
             scope.selectValue = function(value) {
