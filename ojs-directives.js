@@ -1,108 +1,6 @@
-angular.module('ojs.directives', ['ionic'])
+angular.module('ojs.directives', [])
 
-.directive('ojsList', function() {
-    return {
-        restrict: 'E',
-        transclude: true,
-        scope: {
-            isEmpty: '='
-        },
-        templateUrl: './app/views/templates/ojs-listbase.html'
-    }
-})
-
-.directive('ojsItem', function() {
-    return {
-        restrict: 'E',
-        replace: true,
-        transclude: true,
-        templateUrl: './app/views/templates/ojs-itembase.html'
-    }
-})
-
-.directive('ojsForm', function() {
-    return {
-        restrict: 'E',
-        replace: true,
-        transclude: true,
-        scope: {
-            title: '@',
-            saveRecord: '&',
-            closeForm: '&'
-        },
-        templateUrl: './app/views/templates/ojs-formbase.html',
-        link: function(scope, elm, attrs) {
-            var bar = elm.find('ion-header-bar'),
-                btn = angular.element(elm[0].querySelector('button[type="submit"]'));
-            bar.addClass('bar-' + attrs.uiClass);
-            btn.addClass('button-' + attrs.uiClass);
-        }
-    }
-})
-
-.directive('ojsModal', ['$ionicModal', function($ionicModal) {
-	return {
-		restrict: 'E',
-		link: function(scope, elm, attrs) {
-            var parentScope = scope.$parent;
-            
-            parentScope[attrs.name] = {
-                openModal: function() {
-                    $ionicModal.fromTemplateUrl(attrs.template, function(modal) {
-                        parentScope.$ojsModal = modal;
-                        parentScope.$ojsModal.show();
-                    },{
-                        scope: scope,
-                        animation: 'slide-in-up',
-                        backdropClickToClose: false,
-                        hardwareBackButtonClose: false
-                    });
-                },
-                
-                closeModal: function() {
-                    parentScope.$ojsModal.remove();
-                }
-            }
-		}
-	};
-}])
-    
-.directive("ojsPopMenu", ['$ionicPopover', function($ionicPopover) {
-    return {
-        restrict: 'E',
-		link: function(scope, elm, attrs) {
-            var parentScope = scope.$parent;
-            
-            parentScope.$on('$ionicView.enter', function() {
-                $ionicPopover.fromTemplateUrl(attrs.template, {
-                    scope: scope
-//                    animation: 'fade-in'
-                }).then(function(popover) {
-                    parentScope.$ojsPopMenu = popover;
-                });
-            });
-            
-            parentScope.$on('$ionicView.leave', function() {
-                parentScope.$ojsPopMenu.remove();
-            });
-            
-            parentScope[attrs.name] = {
-                openMenu: function(e) {
-                    if (window.navigator.vibrate) {
-                        window.navigator.vibrate(200);
-                    }
-                    parentScope.$ojsPopMenu.show(e);
-                },
-
-                closeMenu: function() {
-                    parentScope.$ojsPopMenu.hide();
-                }
-            }
-        }
-    }
-}])
-
-.directive("format", ['$filter', function($filter) {
+.directive('format', ['$filter', function($filter) {
     return {
         restrict: 'A',
         require: 'ngModel',
@@ -158,6 +56,43 @@ angular.module('ojs.directives', ['ionic'])
     }
 }])
 
+.directive('ojsPopover', ['$ionicPopover', function($ionicPopover) {
+    return {
+        restrict: 'E',
+		link: function(scope, elm, attrs) {
+            var parentScope = scope.$parent;
+            
+            parentScope.$on('$ionicView.enter', function() {
+                $ionicPopover.fromTemplateUrl(attrs.template, {
+                    scope: scope
+                }).then(function(popover) {
+                    parentScope.$ojsPopMenu = popover;
+                });
+            });
+            
+            parentScope.$on('$ionicView.leave', function() {
+                parentScope.$ojsPopMenu.remove();
+            });
+            
+            parentScope[attrs.name] = {
+                openMenu: function(item, e) {
+                    this.selectedItem = item;
+                    
+                    if (window.navigator.vibrate) {
+                        window.navigator.vibrate(200);
+                    }
+                    
+                    parentScope.$ojsPopMenu.show(e);
+                },
+
+                closeMenu: function() {
+                    parentScope.$ojsPopMenu.hide();
+                }
+            }
+        }
+    }
+}])
+
 .directive('ojsSelect', ['$ionicModal', function($ionicModal) {
     return {
         restrict : 'E',
@@ -166,7 +101,7 @@ angular.module('ojs.directives', ['ionic'])
             items: '=',
             value: '='
         },
-        templateUrl: './app/views/templates/ojs-select.html',
+        templateUrl: './app/templates/ojs-select.html',
 
         link: function (scope, element, attrs) {
             var name = attrs.name || 'selModal';
@@ -175,8 +110,6 @@ angular.module('ojs.directives', ['ionic'])
                 scope: scope
             }).then(function(modal) {
                 var bars = modal.$el.find('ion-header-bar');
-//                    heabar = angular.element(bars[0]),
-//                    subbar = angular.element(bars[1]);
                 bars.addClass('bar-' + attrs.uiClass);
                 scope[name] = modal;
             });
