@@ -75,10 +75,10 @@ angular.module('ojs.directives', [])
             });
             
             parentScope[attrs.name] = {
-                openMenu: function(item, e) {
+                openMenu: function(item, e, vibrate) {
                     this.selectedItem = item;
                     
-                    if (window.navigator.vibrate) {
+                    if (vibrate && window.navigator.vibrate) {
                         window.navigator.vibrate(200);
                     }
                     
@@ -133,4 +133,22 @@ angular.module('ojs.directives', [])
             }
         }
     };
-}]);
+}])
+
+.directive('compareTo', function() {
+    return {
+        require: "ngModel",
+        scope: {
+            otherModelValue: "=compareTo"
+        },
+        link: function(scope, element, attributes, ngModel) {
+            ngModel.$validators.compareTo = function(modelValue) {
+                return modelValue == scope.otherModelValue;
+            };
+ 
+            scope.$watch("otherModelValue", function() {
+                ngModel.$validate();
+            });
+        }
+    }
+});
